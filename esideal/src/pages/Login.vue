@@ -1,10 +1,14 @@
 <template>
     <div class="layout">
         <div class="card">
-            <!-- Logo mecanico -->
+            <!-- Logo Mecanico -->
+            <img src="../assets/mechanic.png" alt="Mechanic Logo" id="mecPic"/>
             <!-- Input Nome -->
+            <input type="text" placeholder="Nome" class="input-field">
             <!-- Input Password -->
+            <input type="password" placeholder="Password" class="input-field">
             <!-- Butão Login -->
+            <button class="login-button">Login</button>
         </div>
     </div>
 </template>
@@ -17,11 +21,38 @@
     height: 90vh; /* Ter em conta a Navbar */
 }
 
+#mecPic {
+    width: 75px;
+    height: 75px;
+}
+
 .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 450px;
     height: 500px;
     background-color: var(--color-orange-light);
     border-radius: 30px;
+}
+
+.input-field {
+    width: 80%;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.login-button {
+    width: 80%;
+    padding: 15px;
+    background-color: var(--color-button-blue);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 20px;
 }
 </style>
 

@@ -1,6 +1,9 @@
 <template>
     <nav id="nav">
-        <h3>E.S.Ideal</h3>
+        <div class="logo">
+            <!-- Foto do pistão -->
+            <h3 id="nome">E.S.Ideal</h3>
+        </div>
         <div class="nav-items">
         <router-link to="/profile">Perfil</router-link>
         <router-link to="/services">Serviços</router-link>
@@ -15,6 +18,22 @@
     align-items: center;
     padding: 0 20px;
     background-color: var(--color-orange);
+    height: 10vh;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: bottom;
+    height: 100%;
+}
+
+#nome {
+    font-family: 'Lobster', cursive;
+    font-size: 30px;
+    font-weight: lighter;
+    color: white;
 }
 
 a {
