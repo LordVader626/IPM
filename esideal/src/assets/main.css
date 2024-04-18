@@ -1,0 +1,19 @@
+:root {
+    --color-orange: #FF4D00;
+    --color-orange-light: #FFCAB3;
+    --color-orange-dark: #AA3300;
+    --color-button-blue: #1A8FDD;
+    --color-button-grey: #7A7878;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    background-color: white;
+}
