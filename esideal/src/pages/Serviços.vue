@@ -96,7 +96,7 @@
 }
 
 .customTable, .customTable th, .customTable td {
-    border: 1px solid black; 
+    border: 1px solid black;
 }
 
 .customTable th, .customTable td {
@@ -105,16 +105,16 @@
 }
 
 .customTable thead th {
-    background-color: var(--color-orange); 
+    background-color: var(--color-orange);
     color: white;
 }
 
 .customTable tbody tr:nth-child(odd) { 
-    background-color: #f9f9f9; 
+    background-color: var(--color-table-row-odd);
 }
 
 .customTable tbody tr:nth-child(even) {
-    background-color: #e9e9e9;
+    background-color: var(--color-table-row-even);
 }
 
 .customTable tbody tr:hover {

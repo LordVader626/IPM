@@ -1,6 +1,6 @@
 <template>
     <div class="notFound">
-        <img src="../assets/sadMechanic.png" class="image">
+        <img src="../assets/images/sadMechanic.png" class="image">
         <h3>Erro 404! Página não encontrada</h3>
     </div>
 </template>

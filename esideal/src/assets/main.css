@@ -4,6 +4,8 @@
     --color-orange-dark: #AA3300;
     --color-button-blue: #1A8FDD;
     --color-button-grey: #7A7878;
+    --color-table-row-odd: #F9F9F9;
+    --color-table-row-even: #E9E9E9;
 }
 
 * {

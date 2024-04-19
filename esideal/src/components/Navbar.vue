@@ -2,6 +2,7 @@
     <nav id="nav">
         <div class="logo">
             <!-- Foto do pistão -->
+            <img src="../assets/images/piston.png" id="piston"/>
             <h3 id="nome">E.S.Ideal</h3>
         </div>
         <div class="nav-items">
@@ -23,17 +24,28 @@
 
 .logo {
     display: flex;
-    flex-direction: column; 
+    position: relative;
     align-items: center;
-    justify-content: bottom;
     height: 100%;
 }
 
 #nome {
     font-family: 'Lobster', cursive;
     font-size: 30px;
+    line-height: 30px;
     font-weight: lighter;
     color: white;
+    position: absolute;
+    bottom: 0;
+    margin: 0;
+    z-index: 2;
+    width: 100%;
+}
+
+#piston {
+    height: 100%;
+    position: absolute;
+    z-index: 1;
 }
 
 a {
@@ -47,8 +59,8 @@ a {
     transition: all 0.3s ease-in;
 }
 
-a.router-link-active { /* Não sei o que é isto */
+a.router-link-active {
     background-color: var(--color-orange-dark);
-    color: var(--color-orange-light);
+    color: white;
 }
 </style>

@@ -2,7 +2,7 @@
     <div class="layout">
         <div class="card">
             <!-- Logo Mecanico -->
-            <img src="../assets/mechanic.png" alt="Mechanic Logo" class="mecPic"/>
+            <img src="../assets/images/mechanic.png" alt="Mechanic Logo" class="mecPic"/>
             <!-- Input Nome -->
             <input type="text" placeholder="Nome" class="input-field">
             <!-- Input Password -->
