@@ -6,6 +6,7 @@
     --color-button-grey: #7A7878;
     --color-table-row-odd: #F9F9F9;
     --color-table-row-even: #E9E9E9;
+    --navbar-height: max(10vh, 50px);
 }
 
 * {

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from './pages/Login.vue'
-import Serviços from './pages/Serviços.vue'
+import ServiceList from './pages/ServiceList.vue'
+import Service from './pages/Service.vue'
 import NotFound from './pages/NotFound.vue'
 
 const router = createRouter({
@@ -8,7 +9,8 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/login'},
     { path : '/login', component : Login },
-    { path : '/services', component : Serviços },
+    { path : '/services', component : ServiceList },
+    { path : '/services/:serviceID(.*)', component : Service},
     { path : '/:notFound(.*)', component : NotFound }
   ]
 });

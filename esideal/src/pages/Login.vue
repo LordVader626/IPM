@@ -15,11 +15,12 @@
 
 <style scoped>
 
-.layout{
+.layout {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 90vh; /* Ter em conta a Navbar */
+    min-height: calc(100vh - var(--navbar-height));
+    padding: 20px 0;
 }
 
 .card {
@@ -27,40 +28,39 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 450px;
-    height: 500px;
+    width: 700px;
+    height: 750px;
     background-color: var(--color-orange-light);
     border-radius: 30px;
 }
 
 .mecPic {
-    width: 85px;
-    height: 85px;
+    width: 170px;
+    height: 170px;
     margin-bottom: 50px;
 }
 
 .input-field {
     width: 80%;
-    padding: 15px;
-    margin: 10px 0;
+    padding: 20px;
+    margin: 20px 0;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 20px;
     border: none;
-    font-size: 16px;
+    font-size: 32px;
     text-align: center;
 }
 
 .login-button {
     width: 80%;
-    padding: 15px;
+    padding: 20px;
     background-color: var(--color-button-blue);
     color: white;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 40px;
     border: none;
-    margin-top: 30px;
+    margin-top: 50px;
 }
-
 </style>
 

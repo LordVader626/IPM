@@ -1,7 +1,7 @@
 <template>
     <div class="notFound">
-        <img src="../assets/images/sadMechanic.png" class="image">
-        <h3>Erro 404! Página não encontrada</h3>
+        <img src="../assets/images/sadMechanic.png">
+        <h3>Erro 404! Página não encontrada!</h3>
     </div>
 </template>
 
@@ -14,8 +14,12 @@
     justify-content: center;
 }
 
-.image {
-    height: 300px;
+img {
+    height: 500px;
+}
+
+h3 {
+    font-size: 36px;
 }
 
 </style>

@@ -6,8 +6,8 @@
             <h3 id="nome">E.S.Ideal</h3>
         </div>
         <div class="nav-items">
-        <router-link to="/profile">Perfil</router-link>
-        <router-link to="/services">Serviços</router-link>
+            <router-link to="/services">Serviços</router-link>
+            <router-link to="/profile">Perfil</router-link>
         </div>
     </nav>
 </template>
@@ -19,7 +19,7 @@
     align-items: center;
     padding: 0 20px;
     background-color: var(--color-orange);
-    height: 10vh;
+    height: var(--navbar-height);
 }
 
 .logo {
@@ -31,8 +31,8 @@
 
 #nome {
     font-family: 'Lobster', cursive;
-    font-size: 30px;
-    line-height: 30px;
+    font-size: 65px;
+    line-height: 50px;
     font-weight: lighter;
     color: white;
     position: absolute;
@@ -50,13 +50,17 @@
 
 a {
     text-decoration: none;
-    padding: 0.5rem 1.5rem;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
     font-weight: 600;
     margin-left: 10px;
     border: 1px solid black;
     border-radius: 5px;
     color: black;
     transition: all 0.3s ease-in;
+    align-items: center;
+    min-height: 0; 
+    max-height: 100%;
 }
 
 a.router-link-active {
