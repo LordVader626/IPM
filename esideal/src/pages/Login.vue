@@ -4,14 +4,52 @@
             <!-- Logo Mecanico -->
             <img src="../assets/images/mechanic.png" alt="Mechanic Logo" class="mecPic"/>
             <!-- Input Nome -->
-            <input type="text" placeholder="Nome" class="input-field">
+            <input v-model="email" type="text" placeholder="Nome" class="input-field" @keyup.enter="login">
             <!-- Input Password -->
-            <input type="password" placeholder="Password" class="input-field">
+            <input v-model="telefone" type="password" placeholder="Password" class="input-field" @keyup.enter="login">
             <!-- Butão Login -->
-            <button class="login-button">Login</button>
+            <button @click="login" class="login-button">Login</button>
         </div>
     </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+    data() {
+        return {
+            email: '',
+            telefone: ''
+        };
+    },
+    methods: {
+        async login() {
+            try {
+                // Make an HTTP GET request to fetch clients
+                const response = await axios.get('http://localhost:3002/clients');
+
+                // Check if authentication is successful
+                const client = response.data.find(client => client.email === this.email && client.telefone === this.telefone);
+
+                if (client) {
+                    // Redirect to services page if authentication succeeds
+                    this.$router.push('/services');
+                } else {
+                    alert("Email ou senha incorretos!");
+                }
+            } catch (error) {
+                // Handle authentication errors
+                console.error('Error logging in:', error);
+                alert("Erro ao fazer login. Por favor, tente novamente mais tarde.");
+            }
+        }
+    }
+};
+</script>
+
+
+
 
 <style scoped>
 
