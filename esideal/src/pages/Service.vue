@@ -196,8 +196,25 @@
         },
         confirmSuspendService() {
             const confirmed = window.confirm("Tem a certeza que deseja suspender este serviço?");
-            if (confirmed) {                
-                alert("Serviço suspenso!");
+            if (confirmed) {  
+                const updateData = {
+                    estado: 'parado', // Apenas o campo 'estado' é atualizado
+                    id: this.serviceId // Mantenha o ID para identificar o serviço
+                    // Você não precisa incluir outros campos no objeto de atualização
+                };
+
+                axios.patch(`http://localhost:3002/services/${this.serviceId}`, updateData)
+                .then(response => {
+                    console.log('Service suspended successfully:', response.data);
+                    // Atualize apenas o estado do serviço local para refletir a mudança
+                    this.service.estado = 'parado';
+                    this.serviceState = 'parado';
+                })
+                .catch(error => {
+                    console.error('Error suspending service:', error);
+                    alert("Erro ao suspender o serviço.");
+                });              
+                alert("Serviço suspenso com sucesso!");
             } else {                
                 alert("Operação cancelada.");
             }
