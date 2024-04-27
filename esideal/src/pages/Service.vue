@@ -3,19 +3,20 @@
         <h1 id="nomeServiço">Limpeza interior</h1>
         <div class="informationCards">
             <div class="clientInformation">
-                <h3>Página de Serviço</h3>
+                <h3>Informação do Veículo</h3>
                 <p><b>Matricula: </b>{{ service.vehicleId }}</p>
-                <p><b>Motor: </b>{{ service.vehicleTypeId }}</p>
-                <p><b>Cilindrada: </b>{{ service.cilindrada }}</p>
-                <p><b>Kilometros: </b>{{ service.kms }}</p>
+                <p><b>Motor: </b>{{ motorType(service.vehicleTypeId) }}</p>
+                <p><b>Cilindrada: </b>{{ service.cilindrada }} cc</p>
+                <p><b>Kilometros: </b>{{ service.kms }} km</p>
             </div>
             
             <div class="rightSide">
                 <div class="serviceInformation">
                     <h3>Informações do serviço</h3>
-                    <p><b>Prazo: </b>{{ service.agendamento }}</p>
+                    <p><b>Estado: </b>{{ getEstadoLabel(service.estado) }}</p>
+                    <p><b>Agendamento: </b>{{ formatAgendamento(service.agendamento) }}</p>
+                    <p v-if="service.agendamento === 'programado'" ><b>Data de agendamento: </b>{{ formatDataAgendamento(service.data) }}</p>
                     <p><b>Duração: </b>{{ service.duração }} minutos</p>
-                    <p><b>Estado: </b>{{ service.estado }}</p>
                     <p><b>Descrição: </b>{{ service.descr }}</p>
                 </div>
                 
@@ -55,6 +56,7 @@
                 if (response.data) {
                 // Filter out services with estado "realizado"
                 const service = response.data;
+                console.log(service);
                 if (service.estado !== 'realizado') {
                     // Assign data to component properties
                     this.service = {
@@ -63,11 +65,11 @@
                     servicedefinitionId: service.servicedefinitionId,
                     estado: service.estado,
                     agendamento: service.agendamento,
-                    
+                    data: service.data,
+                    descr: service.descrição
                     };
                     // Fetch service duration and description
                     this.fetchServiceDuration(service.servicedefinitionId);
-                    this.fetchServiceDescription(service.servicedefinitionId);
                     this.fetchVehicleMotor(service.vehicleId);
                     this.fetchVehicleCilindrada(service.vehicleId);
                     this.fetchVehicleKms(service.vehicleId);
@@ -82,7 +84,6 @@
                 console.error('Error fetching service data:', error);
             });
         },
-
         fetchServiceDuration(servicedefinitionId) {
             axios.get(`http://localhost:3002/service-definitions/${servicedefinitionId}`)
             .then(response => {
@@ -98,29 +99,13 @@
                 console.error('Error fetching service duration:', error);
             });
         },
-
-        fetchServiceDescription(servicedefinitionId) {
-            axios.get(`http://localhost:3002/service-definitions/${servicedefinitionId}`)
-            .then(response => {
-                console.log('Service Description Response:', response);
-                if (response.data) {
-                // Assign description to the corresponding service
-                this.service.descr = response.data.descr;
-                } else {
-                console.error(`No service description found for servicedefinitionId: ${servicedefinitionId}`);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching service description:', error);
-            });
-        
-        },
         fetchVehicleMotor(vehicleId) {
             axios.get(`http://localhost:3002/vehicles/${vehicleId}`)
             .then(response => {
                 console.log('Service Vehicle Type Response:', response);
                 if (response.data) {
                     // Assuming the response contains a property named vehicleTypeId
+          
                     this.service.vehicleTypeId = response.data.vehicleTypeId;
                 } else {
                     console.error(`No vehicle data found for vehicleId: ${vehicleId}`);
@@ -160,6 +145,46 @@
                 console.error('Error fetching vehicle data:', error);
             });
         },
+        getEstadoLabel(estado) {
+            if (estado === 'naFila') {
+                return 'Na Fila';
+            } else if (estado === 'programado') {
+                return 'Programado';
+            } else if (estado === 'parado') {
+                return 'Parado';
+            } else {
+            // Handle other estado values here if needed
+            return estado;
+            }
+        },
+        formatAgendamento(agendamento) {
+            if (agendamento === 'filaDeEspera') {
+            return 'Fila de Espera';
+            } else if (agendamento === 'programado') {
+            return 'Programado';
+            } else {
+            return agendamento; // Return the original value if it's not 'filaDeEspera' or 'programado'
+            }
+        },
+        motorType(motor) {
+            if (motor === 'gasolina') {
+            return 'Gasolina';
+            } else if (motor === 'gasoleo') {
+            return 'Gasóleo';
+            } else if (motor === 'eletrico') {
+            return 'Elétrico';
+            } else if (motor === 'hibrido') {
+            return 'Híbrido';
+            } else {
+            return motor; // Return the original value if it's not 'filaDeEspera' or 'programado'
+            }
+        },
+        formatDataAgendamento(data){
+            console.log("Formatting data:", data);
+            console.log(data);
+            if (!data) return '';
+            return `${data.dia}/${data.mes}/${data.ano} ${data.hora}:${data.minutos}`
+        },
         confirmStartService() {
             const confirmed = window.confirm("Tem a certeza que deseja iniciar este serviço?");
             if (confirmed) {                
@@ -180,7 +205,6 @@
         confirmFinishService() {
             const confirmed = window.confirm("Tem a certeza que deseja terminar este serviço?");
             if (confirmed) {
-                // Logic to finish service
                 this.askForRecommendation();
             } else {
                 alert("Operação cancelada.");
@@ -189,8 +213,6 @@
         askForRecommendation() {
             const confirmed = window.confirm("Deseja recomendar algum novo serviço?");
             if (confirmed) {
-                // Logic to recommend new services
-                // Show a form or input box for the user to enter their recommendations
                 this.$router.push(`/services/recommendation/${this.serviceId}`);
             } else {
                 alert("Obrigado pela preferência!");
@@ -204,17 +226,14 @@
         } else if (estado === 'parado') {
           return 'Parado';
         } else {
-          // Handle other estado values here if needed
           return estado;
         }
-      },
+      }
     },
 
     created() {
-      // Extract service ID from the URL
       const urlParts = window.location.href.split('/');
       const serviceId = urlParts[urlParts.length - 1];
-      // Fetch data for the specified service ID
       this.fetchService(serviceId);
     }
   };

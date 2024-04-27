@@ -19,7 +19,7 @@
                 <td>{{ service.descr }}</td>
                 <td>{{ getEstadoLabel(service.estado) }}</td>
                 <td>{{ formatAgendamento(service.agendamento) }}</td>
-                <td>{{ service.duração }}</td>
+                <td>{{ service.duração }} minutos</td>
               </tr>
             </tbody>
             
