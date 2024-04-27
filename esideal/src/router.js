@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from './pages/Login.vue';
 import ServiceList from './pages/ServiceList.vue';
-import Recommendations from './pages/Recommendations.vue';
 import RecommendationForm from './pages/RecommendationForm.vue';
 import NotFound from './pages/NotFound.vue';
 import axios from 'axios';
@@ -12,7 +11,6 @@ const router = createRouter({
     { path: '/', redirect: '/login' },
     { path: '/login', component: Login },
     { path: '/services', component: ServiceList },
-    { path: '/recommendations', component: Recommendations },
     { path: '/services/recommendation/:serviceId', component: RecommendationForm , props: true},
     { path: '/services/:serviceId', component: () => import('./pages/Service.vue'), props: true },
     { path: '/:notFound(.*)', component: NotFound }
