@@ -2,21 +2,30 @@
     <div class="recommendation-form">
       <h1 id="title">Nova Recomendação</h1>
       <!-- Recommendation form fields -->
-      <input type="text" v-model="newRecommendation.automovel" placeholder="Automóvel" required>
-      <input type="text" v-model="newRecommendation.tipo" placeholder="Tipo de Serviço" required>
-      <input type="text" v-model="newRecommendation.nome" placeholder="Serviço" required>
-      <input type="text" v-model="newRecommendation.estado" placeholder="Estado" required>
-      <input type="text" v-model="newRecommendation.prazo" placeholder="Prazo" required>
-      <input type="text" v-model="newRecommendation.duracao" placeholder="Duração" required>
-      <div>
-        <!-- Submit and Cancel buttons -->
-        <button @click="submitForm">Adicionar</button>
-        <button @click="cancelForm">Cancelar</button>
+      <div class="inputWindow">
+        <input type="text" v-model="newRecommendation.automovel" placeholder="Automóvel" required>
+        <select v-model="newRecommendation.tipo" required>
+          <option value="" disabled selected>Tipo de Serviço</option>
+          <option value="gasolina">Gasolina</option>
+          <option value="gasoleo">Gasóleo</option>
+          <option value="eletrico">Elétrico</option>
+          <option value="hibrido">Híbrido</option>
+        </select>
+        <input type="text" v-model="newRecommendation.nome" placeholder="Serviço" required>
+        <input type="text" v-model="newRecommendation.prazo" placeholder="Prazo Recomendado" required>
+        <input type="text" v-model="newRecommendation.descricao" id="descricao" placeholder="Descrição" required>
+        <div>
+          <!-- Submit and Cancel buttons -->
+          <button @click="submitForm">Adicionar</button>
+          <button @click="cancelForm">Cancelar</button>
+        </div>
       </div>
     </div>
   </template>
   
   <script>
+  import axios from 'axios';
+  
   export default {
     data() {
       return {
@@ -24,13 +33,28 @@
           automovel: "",
           tipo: "",
           nome: "",
-          estado: "",
           prazo: "",
-          duracao: ""
+          descricao: ""
         }
       };
     },
     methods: {
+      fetchService(serviceId) {
+            axios.get(`http://localhost:3002/services/${serviceId}`)
+            .then(response => {
+                console.log('Service Data:', response.data);
+                // Check if the response contains data
+                if (response.data) {
+                  const service = response.data;
+                  this.newRecommendation.automovel = service.vehicleId;
+                } else {
+                  console.error('No data found for service ID:', serviceId);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching service data:', error);
+            });
+        },
       submitForm() {
         // Emit an event with the new recommendation data
         this.$emit("add-recommendation", this.newRecommendation);
@@ -38,12 +62,11 @@
             automovel: "",
              tipo: "",
              nome: "",
-             estado: "",
              prazo: "",
-             duracao: ""
+             descricao: ""
          };
         // Navigate back to the main recommendation page
-        this.$router.push("/recommendations");
+        this.$router.push("/recommendations"); // /services/idServico
         
       },
       cancelForm() {
@@ -52,6 +75,11 @@
           this.$router.push("/recommendations");
         }
       }
+    },
+    created() {
+        const urlParts = window.location.href.split('/');
+        const serviceId = urlParts[urlParts.length - 1];
+        this.fetchService(serviceId);
     }
   };
   </script>
@@ -71,10 +99,29 @@
 
 input[type="text"] {
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 15px;
   font-size: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  height: 10%;
+  width: 80%;
+  text-align: center;
+}
+
+#descricao {
+  height: 20%;
+}
+
+select {
+  margin-bottom: 10px;
+  padding: 15px;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  width: 80%;
+  height: 10%;
+  text-align: center;
 }
 
 button {
@@ -88,11 +135,22 @@ button {
   border-radius: 5px;
   cursor: pointer;
   font-size: 20px;
-  transition: background-color 0.5s ease; /* Smooth transition effect */
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: var(--color-orange); /* Change to orange on hover */
+  background-color: var(--color-orange);
+}
+
+.inputWindow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-orange-light);
+  height: 750px;
+  width: 1000px;
+  border-radius: 30px;
 }
 
 </style>

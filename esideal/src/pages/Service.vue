@@ -37,6 +37,7 @@
   export default {
     data() {
       return {
+        serviceId: 's',
         service: {}, // Define a single service object to store the data for the selected service
         serviceDefinitions: {}, // Define an empty object to store service definitions
         vehicleId: {},
@@ -46,6 +47,7 @@
 
     methods: {
         fetchService(serviceId) {
+            this.serviceId = serviceId;
             axios.get(`http://localhost:3002/services/${serviceId}`)
             .then(response => {
                 console.log('Service Data:', response.data);
@@ -158,10 +160,6 @@
                 console.error('Error fetching vehicle data:', error);
             });
         },
-        
-
-        
-
         confirmStartService() {
             const confirmed = window.confirm("Tem a certeza que deseja iniciar este serviço?");
             if (confirmed) {                
@@ -193,7 +191,7 @@
             if (confirmed) {
                 // Logic to recommend new services
                 // Show a form or input box for the user to enter their recommendations
-                this.$router.push('/recommendations');
+                this.$router.push(`/services/recommendation/${this.serviceId}`);
             } else {
                 alert("Obrigado pela preferência!");
             }

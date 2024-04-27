@@ -13,8 +13,8 @@ const router = createRouter({
     { path: '/login', component: Login },
     { path: '/services', component: ServiceList },
     { path: '/recommendations', component: Recommendations },
-    { path: '/recommendationform', component: RecommendationForm },
-    { path: '/services/:serviceId', component: () => import('./pages/Service.vue'), props: true }, // Dynamic route with serviceId param
+    { path: '/services/recommendation/:serviceId', component: RecommendationForm , props: true},
+    { path: '/services/:serviceId', component: () => import('./pages/Service.vue'), props: true },
     { path: '/:notFound(.*)', component: NotFound }
   ]
 });
