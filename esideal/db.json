@@ -245,7 +245,7 @@
       "id": "s31",
       "vehicleId": "08-25-AA",
       "servicedefinitionId": "sp",
-      "estado": "nafila",
+      "estado": "naFila",
       "agendamento": "filaDeEspera",
       "descrição": "Colocar XPTO 225R15"
     },
@@ -268,7 +268,7 @@
       "id": "s33",
       "vehicleId": "AH-32-44",
       "servicedefinitionId": "le",
-      "estado": "nafila",
+      "estado": "naFila",
       "agendamento": "filaDeEspera",
       "descrição": "Ver jantes."
     },

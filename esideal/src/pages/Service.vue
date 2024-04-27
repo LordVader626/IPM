@@ -199,7 +199,7 @@
             }
         },
         getEstadoLabel(estado) {
-        if (estado === 'nafila') {
+        if (estado === 'naFila') {
           return 'Na Fila';
         } else if (estado === 'programado') {
           return 'Programado';
