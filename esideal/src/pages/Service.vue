@@ -25,6 +25,7 @@
                     <button v-if="serviceState === 'pending'" @click="confirmStartService" class="button">Iniciar</button>
                     <button v-if="serviceState === 'pending'" id="button-orange" type="button" class="button">Remover</button>
                     <button v-if="serviceState === 'started'" @click="confirmSuspendService" class="button">Suspender</button>
+                    <button v-if="serviceState === 'started' || serviceState === 'finished'" @click="askForRecommendation" class="button">Sugestões</button>
                     <button v-if="serviceState === 'started'" @click="confirmFinishService" id="button-orange" class="button">Terminar</button>
                 </div>                 
             </div>
@@ -56,7 +57,11 @@
                 if (response.data) {
                 // Filter out services with estado "realizado"
                 const service = response.data;
-                
+                if (service.estado === "parado" || service.estado === "aDecorrer") {
+                    this.serviceState = 'started';
+                } else if (service.estado === "realizado") {
+                    this.serviceState = 'finished';
+                }
                 // Assign data to component properties
                 this.service = {
                 id: service.id,
@@ -142,18 +147,6 @@
                 console.error('Error fetching vehicle data:', error);
             });
         },
-        getEstadoLabel(estado) {
-            if (estado === 'naFila') {
-                return 'Na Fila';
-            } else if (estado === 'programado') {
-                return 'Programado';
-            } else if (estado === 'parado') {
-                return 'Parado';
-            } else {
-            // Handle other estado values here if needed
-            return estado;
-            }
-        },
         formatAgendamento(agendamento) {
             if (agendamento === 'filaDeEspera') {
             return 'Fila de Espera';
@@ -182,22 +175,29 @@
             if (!data) return '';
             return `${data.dia}/${data.mes}/${data.ano} ${data.hora}:${data.minutos}`
         },
-        confirmStartService() {
-            const confirmed = window.confirm("Tem a certeza que deseja iniciar este serviço?");
-            if (confirmed) {                
-                this.serviceState = 'started'; // Update service state to 'started'
-                alert("Serviço iniciado com sucesso!");
-            } else {                
-                alert("Operação cancelada.");
-            }
+        confirmStartService() {         
+            const updateData = {
+                estado: 'aDecorrer',
+                id: this.serviceId
+            };
+
+            axios.patch(`http://localhost:3002/services/${this.serviceId}`, updateData)
+            .then(response => {
+                console.log('Service suspended successfully:', response.data);
+                this.service.estado = 'aDecorrer';
+                this.serviceState = 'started';
+            })
+            .catch(error => {
+                console.error('Error suspending service:', error);
+                alert("Erro ao suspender o serviço.");
+            });
         },
         confirmSuspendService() {
             const confirmed = window.confirm("Tem a certeza que deseja suspender este serviço?");
-            if (confirmed) {  
+            if (confirmed) {
                 const updateData = {
-                    estado: 'parado', // Apenas o campo 'estado' é atualizado
-                    id: this.serviceId // Mantenha o ID para identificar o serviço
-                    // Você não precisa incluir outros campos no objeto de atualização
+                    estado: 'parado',
+                    id: this.serviceId 
                 };
 
                 axios.patch(`http://localhost:3002/services/${this.serviceId}`, updateData)
@@ -205,13 +205,12 @@
                     console.log('Service suspended successfully:', response.data);
                     // Atualize apenas o estado do serviço local para refletir a mudança
                     this.service.estado = 'parado';
-                    this.serviceState = 'parado';
+                    this.serviceState = 'pending';
                 })
                 .catch(error => {
                     console.error('Error suspending service:', error);
                     alert("Erro ao suspender o serviço.");
-                });              
-                alert("Serviço suspenso com sucesso!");
+                });
             } else {                
                 alert("Operação cancelada.");
             }
@@ -231,25 +230,17 @@
                     // Atualize apenas o estado do serviço local para refletir a mudança
                     this.service.estado = 'realizado';
                     this.serviceState = 'realizado';
-                    alert("Serviço terminado com sucesso!");
                 })
                 .catch(error => {
                     console.error('Error finishing service:', error);
                     alert("Erro ao terminar o serviço.");
                 });
-                // Logic to finish service
-                this.askForRecommendation();
             } else {
                 alert("Operação cancelada.");
             }
         },
         askForRecommendation() {
-            const confirmed = window.confirm("Deseja recomendar algum novo serviço?");
-            if (confirmed) {
-                this.$router.push(`/services/recommendation/${this.serviceId}`);
-            } else {
-                alert("Obrigado pela preferência!");
-            }
+            this.$router.push(`/services/recommendation/${this.serviceId}`);
         },
         getEstadoLabel(estado) {
         if (estado === 'naFila') {
@@ -258,6 +249,10 @@
           return 'Programado';
         } else if (estado === 'parado') {
           return 'Parado';
+        } else if (estado === 'aDecorrer') {
+          return 'A Decorrer';
+        } else if (estado === 'realizado') {
+            return 'Realizado';
         } else {
           return estado;
         }

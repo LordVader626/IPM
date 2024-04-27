@@ -31,6 +31,7 @@
       return {
         serviceId: '',
         automovel: '',
+        service: {},
         newRecommendation: {
           tipo: "",
           nome: "",
@@ -47,8 +48,8 @@
                 console.log('Service Data:', response.data);
                 // Check if the response contains data
                 if (response.data) {
-                  const service = response.data;
-                  this.automovel = service.vehicleId;
+                  this.service = response.data;
+                  this.automovel = this.service.vehicleId;
                 } else {
                   console.error('No data found for service ID:', serviceId);
                 }
@@ -58,10 +59,18 @@
             });
         },
       submitForm() {
-        if (!service.recomendacoes){
-          service.recomendacoes = []
+        if (!this.service.recomendacoes){
+          this.service.recomendacoes = []
         }
-        service.recomendacoes.append(this.newRecommendation);
+        this.service.recomendacoes.push(this.newRecommendation);
+        
+        axios.put(`http://localhost:3002/services/${this.serviceId}`, this.service)
+          .then( (response) => {
+            console.log(response);
+          })
+          .catch( (error) => {
+            console.error(error);
+          });
 
         this.newRecommendation = {
              tipo: "",
@@ -76,7 +85,7 @@
       cancelForm() {
         if (window.confirm("Tem a certeza que deseja cancelar?")) {
           // Navigate back to the main recommendation page
-          this.$router.push("/recommendations");
+          this.$router.push(`/services/${this.serviceId}`);
         }
       }
     },
