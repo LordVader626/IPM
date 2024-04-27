@@ -1,5 +1,6 @@
 <template>
     <div class="layout">
+
         <div class="card">
             <!-- Logo Mecanico -->
             <img src="../assets/images/mechanic.png" alt="Mechanic Logo" class="mecPic"/>
@@ -10,19 +11,51 @@
             <!-- Butão Login -->
             <button @click="login" class="login-button">Login</button>
         </div>
+
+        <LoginError :modalActive="modalActive" @close="toggleModal">
+            <img src="../assets/images/error.png" alt="Error" class="errorImg"/>
+
+            <div v-if="loginBool" class="modal-content">
+                <h1>Erro ao fazer login!</h1>
+                <p>Nome ou Senha incorretos</p>
+            </div>
+
+            <div v-else class="modal-content">
+                <h1>Erro ao fazer login!</h1>
+                <p>Por favor tente novamente</p>
+            </div>
+        </LoginError>
+
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import LoginError from '../components/LoginError.vue';
+import {ref} from 'vue'
 
 export default {
     data() {
         return {
+            loginBool: null,
             email: '',
             telefone: ''
         };
     },
+    setup() {
+        const modalActive = ref(false);
+
+        const toggleModal = () => {
+            modalActive.value = !modalActive.value;
+        };
+
+        return { modalActive, toggleModal };
+    },
+
+    components: {
+        LoginError,
+    },
+
     methods: {
         async login() {
             try {
@@ -36,12 +69,16 @@ export default {
                     // Redirect to services page if authentication succeeds
                     this.$router.push('/services');
                 } else {
-                    alert("Email ou senha incorretos!");
+                    //alert("Email ou senha incorretos!");
+                    this.loginBool = true
+                    this.toggleModal();
                 }
             } catch (error) {
                 // Handle authentication errors
                 console.error('Error logging in:', error);
-                alert("Erro ao fazer login. Por favor, tente novamente mais tarde.");
+                //alert("Erro ao fazer login. Por favor, tente novamente mais tarde.");
+                this.loginBool = false
+                this.toggleModal();
             }
         }
     }
@@ -100,5 +137,22 @@ export default {
     border: none;
     margin-top: 50px;
 }
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.errorImg {
+    display: flex;
+    width: 50px; /* Adjust the size as needed */
+    height: auto;
+    margin-bottom: 20px; /* Add some space below the image */
+}
+
 </style>
 
