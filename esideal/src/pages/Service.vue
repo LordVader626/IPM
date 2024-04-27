@@ -38,7 +38,7 @@
   export default {
     data() {
       return {
-        serviceId: 's',
+        serviceId: '',
         service: {}, // Define a single service object to store the data for the selected service
         serviceDefinitions: {}, // Define an empty object to store service definitions
         vehicleId: {},
@@ -56,26 +56,23 @@
                 if (response.data) {
                 // Filter out services with estado "realizado"
                 const service = response.data;
-                console.log(service);
-                if (service.estado !== 'realizado') {
-                    // Assign data to component properties
-                    this.service = {
-                    id: service.id,
-                    vehicleId: service.vehicleId,
-                    servicedefinitionId: service.servicedefinitionId,
-                    estado: service.estado,
-                    agendamento: service.agendamento,
-                    data: service.data,
-                    descr: service.descrição
-                    };
-                    // Fetch service duration and description
-                    this.fetchServiceDuration(service.servicedefinitionId);
-                    this.fetchVehicleMotor(service.vehicleId);
-                    this.fetchVehicleCilindrada(service.vehicleId);
-                    this.fetchVehicleKms(service.vehicleId);
-                } else {
-                    console.error('Service has been completed:', service);
-                }
+                
+                // Assign data to component properties
+                this.service = {
+                id: service.id,
+                vehicleId: service.vehicleId,
+                servicedefinitionId: service.servicedefinitionId,
+                estado: service.estado,
+                agendamento: service.agendamento,
+                data: service.data,
+                descr: service.descrição
+                };
+                // Fetch service duration and description
+                this.fetchServiceDuration(service.servicedefinitionId);
+                this.fetchVehicleMotor(service.vehicleId);
+                this.fetchVehicleCilindrada(service.vehicleId);
+                this.fetchVehicleKms(service.vehicleId);
+                
                 } else {
                 console.error('No data found for service ID:', serviceId);
                 }

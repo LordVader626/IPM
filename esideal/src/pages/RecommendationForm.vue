@@ -3,7 +3,7 @@
       <h1 id="title">Nova Recomendação</h1>
       <!-- Recommendation form fields -->
       <div class="inputWindow">
-        <input type="text" v-model="newRecommendation.automovel" placeholder="Automóvel" required>
+        <input type="text" v-model="this.automovel" placeholder="Automóvel" required>
         <select v-model="newRecommendation.tipo" required>
           <option value="" disabled selected>Tipo de Serviço</option>
           <option value="gasolina">Gasolina</option>
@@ -29,8 +29,9 @@
   export default {
     data() {
       return {
+        serviceId: '',
+        automovel: '',
         newRecommendation: {
-          automovel: "",
           tipo: "",
           nome: "",
           prazo: "",
@@ -40,13 +41,14 @@
     },
     methods: {
       fetchService(serviceId) {
+            this.serviceId = serviceId;
             axios.get(`http://localhost:3002/services/${serviceId}`)
             .then(response => {
                 console.log('Service Data:', response.data);
                 // Check if the response contains data
                 if (response.data) {
                   const service = response.data;
-                  this.newRecommendation.automovel = service.vehicleId;
+                  this.automovel = service.vehicleId;
                 } else {
                   console.error('No data found for service ID:', serviceId);
                 }
@@ -56,17 +58,19 @@
             });
         },
       submitForm() {
-        // Emit an event with the new recommendation data
-        this.$emit("add-recommendation", this.newRecommendation);
+        if (!service.recomendacoes){
+          service.recomendacoes = []
+        }
+        service.recomendacoes.append(this.newRecommendation);
+
         this.newRecommendation = {
-            automovel: "",
              tipo: "",
              nome: "",
              prazo: "",
              descricao: ""
          };
         // Navigate back to the main recommendation page
-        this.$router.push("/recommendations"); // /services/idServico
+        this.$router.push(`/services/${this.serviceId}`); // /services/idServico
         
       },
       cancelForm() {
