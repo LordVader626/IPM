@@ -66,11 +66,13 @@
             startPopupActive.value = !startPopupActive.value;
         };
 
+
         const suspendPopupActive = ref(false);
 
         const toggleSuspendPopup = () => {
             suspendPopupActive.value = !suspendPopupActive.value;
         };
+
 
         return { startPopupActive, togglestartPopup, suspendPopupActive, toggleSuspendPopup };
     },
@@ -249,7 +251,7 @@
                 alert("Serviço suspenso com sucesso!");
         },
         confirmSuspendServiceCancel() {
-            this.togglestartPopup(); 
+            this.toggleSuspendPopup(); 
             alert("Operação cancelada.");
         },
         confirmFinishService() {
