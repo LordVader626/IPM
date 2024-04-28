@@ -22,29 +22,61 @@
                 
                 <div class="button-container">
                     <!-- Buttons -->
-                    <button v-if="serviceState === 'pending'" @click="confirmStartService" class="button">Iniciar</button>
+                    <button v-if="serviceState === 'pending'" @click="togglestartPopup" class="button">Iniciar</button>
                     <button v-if="serviceState === 'pending'" id="button-orange" type="button" class="button">Remover</button>
-                    <button v-if="serviceState === 'started'" @click="confirmSuspendService" class="button">Suspender</button>
-                    <button v-if="serviceState === 'started' || serviceState === 'finished'" @click="askForRecommendation" class="button">Sugestões</button>
+                    <button v-if="serviceState === 'started'" @click="toggleSuspendPopup" class="button">Suspender</button>
                     <button v-if="serviceState === 'started'" @click="confirmFinishService" id="button-orange" class="button">Terminar</button>
                 </div>                 
             </div>
         </div>
+
+        <StartPopup :modalActive="startPopupActive" @close="togglestartPopup" @start="confirmStartService" @cancel="confirmStartServiceCancel">
+            <h1>Tem a certeza de que deseja iniciar o serviço?</h1>
+        </StartPopup>
+
+        <SuspendPopup :modalActive="suspendPopupActive" @close="toggleSuspendPopup" @start="confirmSuspendService" @cancel="confirmSuspendServiceCancel">
+            <h1>Tem a certeza de que deseja suspender o serviço?</h1>
+        </SuspendPopup>
+
+
     </div>
 </template>
 
 <script>
   import axios from 'axios';
+  import StartPopup from '../components/2BPopup.vue';
+  import SuspendPopup from '../components/2BPopup.vue';
+  import {ref} from 'vue';
   
   export default {
     data() {
       return {
-        serviceId: '',
+        serviceId: 's',
         service: {}, // Define a single service object to store the data for the selected service
         serviceDefinitions: {}, // Define an empty object to store service definitions
         vehicleId: {},
         serviceState: 'pending', // Initialize service state
       };
+    },
+
+    setup() {
+        const startPopupActive = ref(false);
+
+        const togglestartPopup = () => {
+            startPopupActive.value = !startPopupActive.value;
+        };
+
+        const suspendPopupActive = ref(false);
+
+        const toggleSuspendPopup = () => {
+            suspendPopupActive.value = !suspendPopupActive.value;
+        };
+
+        return { startPopupActive, togglestartPopup, suspendPopupActive, toggleSuspendPopup };
+    },
+
+    components: {
+        StartPopup, SuspendPopup,
     },
 
     methods: {
@@ -57,27 +89,26 @@
                 if (response.data) {
                 // Filter out services with estado "realizado"
                 const service = response.data;
-                if (service.estado === "parado" || service.estado === "aDecorrer") {
-                    this.serviceState = 'started';
-                } else if (service.estado === "realizado") {
-                    this.serviceState = 'finished';
+                console.log(service);
+                if (service.estado !== 'realizado') {
+                    // Assign data to component properties
+                    this.service = {
+                    id: service.id,
+                    vehicleId: service.vehicleId,
+                    servicedefinitionId: service.servicedefinitionId,
+                    estado: service.estado,
+                    agendamento: service.agendamento,
+                    data: service.data,
+                    descr: service.descrição
+                    };
+                    // Fetch service duration and description
+                    this.fetchServiceDuration(service.servicedefinitionId);
+                    this.fetchVehicleMotor(service.vehicleId);
+                    this.fetchVehicleCilindrada(service.vehicleId);
+                    this.fetchVehicleKms(service.vehicleId);
+                } else {
+                    console.error('Service has been completed:', service);
                 }
-                // Assign data to component properties
-                this.service = {
-                id: service.id,
-                vehicleId: service.vehicleId,
-                servicedefinitionId: service.servicedefinitionId,
-                estado: service.estado,
-                agendamento: service.agendamento,
-                data: service.data,
-                descr: service.descrição
-                };
-                // Fetch service duration and description
-                this.fetchServiceDuration(service.servicedefinitionId);
-                this.fetchVehicleMotor(service.vehicleId);
-                this.fetchVehicleCilindrada(service.vehicleId);
-                this.fetchVehicleKms(service.vehicleId);
-                
                 } else {
                 console.error('No data found for service ID:', serviceId);
                 }
@@ -147,6 +178,18 @@
                 console.error('Error fetching vehicle data:', error);
             });
         },
+        getEstadoLabel(estado) {
+            if (estado === 'naFila') {
+                return 'Na Fila';
+            } else if (estado === 'programado') {
+                return 'Programado';
+            } else if (estado === 'parado') {
+                return 'Parado';
+            } else {
+            // Handle other estado values here if needed
+            return estado;
+            }
+        },
         formatAgendamento(agendamento) {
             if (agendamento === 'filaDeEspera') {
             return 'Fila de Espera';
@@ -175,29 +218,21 @@
             if (!data) return '';
             return `${data.dia}/${data.mes}/${data.ano} ${data.hora}:${data.minutos}`
         },
-        confirmStartService() {         
-            const updateData = {
-                estado: 'aDecorrer',
-                id: this.serviceId
-            };
-
-            axios.patch(`http://localhost:3002/services/${this.serviceId}`, updateData)
-            .then(response => {
-                console.log('Service suspended successfully:', response.data);
-                this.service.estado = 'aDecorrer';
-                this.serviceState = 'started';
-            })
-            .catch(error => {
-                console.error('Error suspending service:', error);
-                alert("Erro ao suspender o serviço.");
-            });
+        confirmStartService() {
+            this.togglestartPopup();              
+            this.serviceState = 'started'; // Update service state to 'started'
+            alert("Serviço iniciado com sucesso!");
+        },
+        confirmStartServiceCancel() {
+            this.togglestartPopup(); 
+            alert("Operação cancelada.");
         },
         confirmSuspendService() {
-            const confirmed = window.confirm("Tem a certeza que deseja suspender este serviço?");
-            if (confirmed) {
+            this.toggleSuspendPopup();
                 const updateData = {
-                    estado: 'parado',
-                    id: this.serviceId 
+                    estado: 'parado', // Apenas o campo 'estado' é atualizado
+                    id: this.serviceId // Mantenha o ID para identificar o serviço
+                    // Você não precisa incluir outros campos no objeto de atualização
                 };
 
                 axios.patch(`http://localhost:3002/services/${this.serviceId}`, updateData)
@@ -205,15 +240,17 @@
                     console.log('Service suspended successfully:', response.data);
                     // Atualize apenas o estado do serviço local para refletir a mudança
                     this.service.estado = 'parado';
-                    this.serviceState = 'pending';
+                    this.serviceState = 'parado';
                 })
                 .catch(error => {
                     console.error('Error suspending service:', error);
                     alert("Erro ao suspender o serviço.");
-                });
-            } else {                
-                alert("Operação cancelada.");
-            }
+                });              
+                alert("Serviço suspenso com sucesso!");
+        },
+        confirmSuspendServiceCancel() {
+            this.togglestartPopup(); 
+            alert("Operação cancelada.");
         },
         confirmFinishService() {
             const confirmed = window.confirm("Tem a certeza que deseja terminar este serviço?");
@@ -230,17 +267,25 @@
                     // Atualize apenas o estado do serviço local para refletir a mudança
                     this.service.estado = 'realizado';
                     this.serviceState = 'realizado';
+                    alert("Serviço terminado com sucesso!");
                 })
                 .catch(error => {
                     console.error('Error finishing service:', error);
                     alert("Erro ao terminar o serviço.");
                 });
+                // Logic to finish service
+                this.askForRecommendation();
             } else {
                 alert("Operação cancelada.");
             }
         },
         askForRecommendation() {
-            this.$router.push(`/services/recommendation/${this.serviceId}`);
+            const confirmed = window.confirm("Deseja recomendar algum novo serviço?");
+            if (confirmed) {
+                this.$router.push(`/services/recommendation/${this.serviceId}`);
+            } else {
+                alert("Obrigado pela preferência!");
+            }
         },
         getEstadoLabel(estado) {
         if (estado === 'naFila') {
@@ -249,10 +294,6 @@
           return 'Programado';
         } else if (estado === 'parado') {
           return 'Parado';
-        } else if (estado === 'aDecorrer') {
-          return 'A Decorrer';
-        } else if (estado === 'realizado') {
-            return 'Realizado';
         } else {
           return estado;
         }

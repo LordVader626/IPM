@@ -32,7 +32,7 @@
 <script>
 import axios from 'axios';
 import LoginError from '../components/LoginError.vue';
-import {ref} from 'vue'
+import {ref} from 'vue';
 
 export default {
     data() {
