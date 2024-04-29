@@ -6,11 +6,24 @@
             <h3 id="nome">E.S.Ideal</h3>
         </div>
         <div class="nav-items">
-            <router-link to="/services">Serviços</router-link>
-            <router-link to="/profile">Perfil</router-link>
+            <router-link v-if="!isLoginRoute" to="/services">Serviços</router-link>
+            <router-link v-if="!isLoginRoute" to="/login">Logout</router-link>
         </div>
     </nav>
 </template>
+
+<script>
+export default {
+  name: 'NavBar',
+  computed: {
+    // Computed property to check if the current route is /login
+    isLoginRoute() {
+      return this.$route.path === '/login';
+    }
+  }
+}
+</script>
+
 
 <style scoped>
 #nav {
