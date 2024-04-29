@@ -25,6 +25,7 @@
                     <button v-if="serviceState === 'pending'" @click="togglestartPopup" class="button">Iniciar</button>
                     <button v-if="serviceState === 'pending'" id="button-orange" type="button" class="button">Remover</button>
                     <button v-if="serviceState === 'started'" @click="toggleSuspendPopup" class="button">Suspender</button>
+                    <button v-if="serviceState === 'started' || serviceState === 'finished'" @click="askForRecommendation" class="button">Sugestões</button>
                     <button v-if="serviceState === 'started'" @click="confirmFinishService" id="button-orange" class="button">Terminar</button>
                 </div>                 
             </div>
@@ -92,7 +93,11 @@
                 // Filter out services with estado "realizado"
                 const service = response.data;
                 console.log(service);
-                if (service.estado !== 'realizado') {
+                if (service.estado === "parado" || service.estado === "aDecorrer") {
+                    this.serviceState = 'started';
+                } else if (service.estado === 'realizado') {
+                    this.serviceState = 'finished';
+                }
                     // Assign data to component properties
                     this.service = {
                     id: service.id,
@@ -108,9 +113,7 @@
                     this.fetchVehicleMotor(service.vehicleId);
                     this.fetchVehicleCilindrada(service.vehicleId);
                     this.fetchVehicleKms(service.vehicleId);
-                } else {
-                    console.error('Service has been completed:', service);
-                }
+                
                 } else {
                 console.error('No data found for service ID:', serviceId);
                 }
@@ -221,13 +224,25 @@
             return `${data.dia}/${data.mes}/${data.ano} ${data.hora}:${data.minutos}`
         },
         confirmStartService() {
-            this.togglestartPopup();              
-            this.serviceState = 'started'; // Update service state to 'started'
-            alert("Serviço iniciado com sucesso!");
+            this.togglestartPopup();
+            this.serviceState = 'started';
+            const updateData = {
+                    estado: 'aDecorrer',
+                    id: this.serviceId 
+            }
+            axios.patch(`http://localhost:3002/services/${this.serviceId}`, updateData)
+                .then(response => {
+                    console.log('Service suspended successfully:', response.data);
+                    // Atualize apenas o estado do serviço local para refletir a mudança
+                    this.service.estado = 'aDecorrer';
+                })
+                .catch(error => {
+                    console.error('Error suspending service:', error);
+                    alert("Erro ao suspender o serviço.");
+                });
         },
         confirmStartServiceCancel() {
-            this.togglestartPopup(); 
-            alert("Operação cancelada.");
+            this.togglestartPopup();
         },
         confirmSuspendService() {
             this.toggleSuspendPopup();
@@ -242,7 +257,7 @@
                     console.log('Service suspended successfully:', response.data);
                     // Atualize apenas o estado do serviço local para refletir a mudança
                     this.service.estado = 'parado';
-                    this.serviceState = 'parado';
+                    this.serviceState = 'pending';
                 })
                 .catch(error => {
                     console.error('Error suspending service:', error);
@@ -268,26 +283,19 @@
                     console.log('Service finished successfully:', response.data);
                     // Atualize apenas o estado do serviço local para refletir a mudança
                     this.service.estado = 'realizado';
-                    this.serviceState = 'realizado';
+                    this.serviceState = 'finished';
                     alert("Serviço terminado com sucesso!");
                 })
                 .catch(error => {
                     console.error('Error finishing service:', error);
                     alert("Erro ao terminar o serviço.");
                 });
-                // Logic to finish service
-                this.askForRecommendation();
             } else {
                 alert("Operação cancelada.");
             }
         },
         askForRecommendation() {
-            const confirmed = window.confirm("Deseja recomendar algum novo serviço?");
-            if (confirmed) {
-                this.$router.push(`/services/recommendation/${this.serviceId}`);
-            } else {
-                alert("Obrigado pela preferência!");
-            }
+            this.$router.push(`/services/recommendation/${this.serviceId}`);
         },
         getEstadoLabel(estado) {
         if (estado === 'naFila') {
@@ -296,6 +304,10 @@
           return 'Programado';
         } else if (estado === 'parado') {
           return 'Parado';
+        } else if (estado === 'aDecorrer') {
+          return 'A Decorrer';
+        } else if (estado === 'realizado') {
+            return 'Realizado';
         } else {
           return estado;
         }
